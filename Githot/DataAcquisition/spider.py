@@ -37,3 +37,16 @@ class Spider():
 
         '''end'''
         return project_urls
+
+    def _search(self,keyWord,num):
+        '''
+            通过关键词搜索项目仓库链接
+            :param keyWord:关键词
+                   num:返回链接数量
+            :return links:链接
+        '''
+        '''your demo'''
+        links = list(str)
+
+        '''end'''
+        return links

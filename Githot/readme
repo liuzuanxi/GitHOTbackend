@@ -1,0 +1,6 @@
+1.打开Githot/settings.py 的TODO 1 配置数据库
+
+2.打开控制台，依次输入以下内容，完成数据表的生成:
+    python manage.py migrate
+    python manage.py makemigrations DataTransmission
+    python manage.py migrate DataTransmission

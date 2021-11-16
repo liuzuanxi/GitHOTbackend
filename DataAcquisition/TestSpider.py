@@ -35,36 +35,53 @@ class Spider():
         :param url: 链接
         :return data: 爬取内容
         '''
-        # headers = {
-        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
-        #
-        # response = requests.get(url, headers=headers)
-        # html = response.text
+
         html = self.getHtml(url)
         s = Selector(text = html)
         title = s.xpath('//strong[@itemprop="name"]/a/text()').extract_first()
-        print(title)
+        title = title if title else ''
+        # print('Title: '+title)
         introductions = s.xpath('//div[@class="BorderGrid-cell"]/p[1]/text()').extract()
         introduction = ''
+
         for item in introductions:
             introduction += item.strip()
-        print(introduction.strip())
-        keywords = s.xpath('//div[@class="f6"]/a/text()').extract()
-        # for keyword in keywords:
-        #     print(keyword.strip())
+        introduction = introduction if introduction else ''
+        # print('Introduction: '+introduction.strip())
+        keyword_list = s.xpath('//div[@class="f6"]/a/text()').extract()
 
+        print('Keyword:')
+        keywords = []
+        for keyword in keyword_list:
+            keyword = keyword.strip()
+            keywords.append(keyword)
+            # print(keyword)
+
+        star = s.xpath('//*[@id="repository-container-header"]//li/div/a[@class="social-count js-social-count"]/text()').extract_first()
+        star = star.strip() if star else ''
+        # print('Stars: ',star)
+        # print()
         '''your demo'''
-        # data = {"title": str, "url": url, "introduction": str,'stars':int,"keyWords":list(str)}
+        data = {"title": title, "url": url, "introduction": introduction,'stars':star,"keyWords":keywords}
 
         '''end'''
-        # return data
+        return data
 
-    def _getHtml(self,url):
+    def getHtml(self,url):
+        proxies = {
+            "http": "http://47.243.226.217:14467",
+            "http": "http://47.243.226.217:14465",
+            "http": "http://47.243.226.217:14466",
+            "http": "http://47.242.190.60:10808",
+            "http": "http://47.242.66.236:5329",
+        }
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
-
-        response = requests.get(url, headers=headers)
-        html = response.text
+        try:
+            response = requests.get(url, headers=headers, proxies=proxies)
+            html = response.text
+        except Exception as err:
+            print(err)
         return html
 
     def _getAllproject(self, num):
@@ -79,7 +96,7 @@ class Spider():
         url = 'https://hub.fastgit.org/search?p={}&q=stars%3A%3E100&type=Repositories'
         for page in range(1,100):
             current_url = url.format(page)
-            print('current url:  ',current_url)
+            # print('current url:  ',current_url)
             html = self.getHtml(current_url)
             s = Selector(text=html)
             urls = s.xpath('//li/div[2]/div[1]/div/a/@href').extract()
@@ -87,17 +104,15 @@ class Spider():
             pre_url = 'https://hub.fastgit.org'
             for item in urls:
                 project_url = pre_url+item
-                if len(project_urls) > num:
+                if len(project_urls) >= num:
                     break
                 project_urls.append(project_url)
             print(len(project_urls))
-            if len(project_urls) > num:
+            if len(project_urls) >= num:
                 break
             time.sleep(5)
-            print('end')
+            # print('end')
             # print()
-        for i in project_urls:
-            print(i)
 
 
         '''end'''
@@ -107,7 +122,10 @@ a = Spider()
 a.__init__()
 url = 'https://hub.fastgit.org/huggingface/datasets'
 # a._parse(url)
-a._getAllproject(100)
+project_urls = a._getAllproject(10)
+for url in project_urls:
+    data = a._parse(url)
+    time.sleep(5)
 
 
 

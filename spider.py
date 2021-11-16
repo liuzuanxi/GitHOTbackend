@@ -30,9 +30,15 @@ class Spider():
         '''
 
         response = requests.get(url, headers=self.headers)
+        dev
+        # html = response.text
+        s = Selector(text = html)
+        title = s.xpath('//span[@itemprop="name"]/a/text()').extract_first()
+
         html = response.text
         s = Selector(text = html)
         title = s.xpath('//span[@class="author flex-self-stretch"]').extract()
+        dev
 
 
 

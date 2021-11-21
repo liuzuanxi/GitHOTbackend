@@ -37,6 +37,9 @@ class Spider():
         '''
 
         html = self.getHtml(url)
+
+        # print(html)
+
         s = Selector(text = html)
         title = s.xpath('//strong[@itemprop="name"]/a/text()').extract_first()
         title = title if title else ''
@@ -50,7 +53,7 @@ class Spider():
         # print('Introduction: '+introduction.strip())
         keyword_list = s.xpath('//div[@class="f6"]/a/text()').extract()
 
-        print('Keyword:')
+        # print('Keyword:')
         keywords = []
         for keyword in keyword_list:
             keyword = keyword.strip()
@@ -69,11 +72,19 @@ class Spider():
 
     def getHtml(self,url):
         proxies = {
-            "http": "http://47.243.226.217:14467",
-            "http": "http://47.243.226.217:14465",
-            "http": "http://47.243.226.217:14466",
-            "http": "http://47.242.190.60:10808",
-            "http": "http://47.242.66.236:5329",
+            "http":"http://49.51.73.134:11263",
+            "http":"http://49.51.73.134:11264",
+            "http":"http://170.106.104.167:11849",
+            "http":"http://170.106.104.167:11850",
+            "http":"http://170.106.104.167:11851",
+            #
+            #
+            #
+            # "http": "http://47.243.226.217:14467",
+            # "http": "http://47.243.226.217:14465",
+            # "http": "http://47.243.226.217:14466",
+            # "http": "http://47.242.190.60:10808",
+            # "http": "http://47.242.66.236:5329",
         }
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'}
@@ -93,19 +104,29 @@ class Spider():
         '''your demo'''
         project_urls = []
         count = 0
-        url = 'https://hub.fastgit.org/search?p={}&q=stars%3A%3E100&type=Repositories'
+        # 'https://github.com/search?o=desc&p=2&q=stars%3A%3E100&s=updated&type=Repositories'
+        url = 'https://github.com/search?o=desc&p={}&q=stars%3A%3E100&s=updated&type=Repositories'
+
+
+        # url = 'https://hub.fastgit.org/search?p={}&q=stars%3A%3E100&type=Repositories'
+        # 'https://hub.fastgit.org/search?p=1&q=stars%3A%3E100&type=Repositories'
         for page in range(1,100):
             current_url = url.format(page)
             # print('current url:  ',current_url)
             html = self.getHtml(current_url)
             s = Selector(text=html)
-            urls = s.xpath('//li/div[2]/div[1]/div/a/@href').extract()
-            # '//*[@id="js-pjax-container"]/div/div[3]/div/ul/li[10]/div[2]/div[1]/div/a'
-            pre_url = 'https://hub.fastgit.org'
+            urls = s.xpath('//ul[@class="repo-list"]/li/div[2]//div[@class="f4 text-normal"]/a/@href').extract()
+            # '//*[@id="js-pjax-container"]/div/div[3]/div/ul/li[1]/div[2]/div[1]/div/a'
+
+            # pre_url = 'https://hub.fastgit.org'
+            pre_url = 'https://github.com'
             for item in urls:
                 project_url = pre_url+item
                 if len(project_urls) >= num:
                     break
+
+                # print(project_url)
+
                 project_urls.append(project_url)
             print(len(project_urls))
             if len(project_urls) >= num:
@@ -120,12 +141,23 @@ class Spider():
 
 a = Spider()
 a.__init__()
-url = 'https://hub.fastgit.org/huggingface/datasets'
-# a._parse(url)
+# url = 'https://hub.fastgit.org/huggingface/datasets'
+url = 'https://github.com/huggingface/datasets'
+# data = a._parse(url)
+# print(data['title'])
+# print(data['url'])
+# print(data['introduction'])
+# print(data['stars'])
 project_urls = a._getAllproject(10)
+
 for url in project_urls:
-    data = a._parse(url)
-    time.sleep(5)
+    print(url)
+    # data = a._parse(url)
+    # print(data['title'])
+    # print(data['url'])
+    # print(data['introduction'])
+    # print(data['stars'])
+    # time.sleep(5)
 
 
 
